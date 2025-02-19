@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Portfolio</title>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-black text-white">
+    <div id="root"></div>
+    
+    <script type="text/babel">
+        function GameBoyAnimation() {
+            const boxWidth = 650;  // Width of green div
+            const boxHeight = 500; // Height of green div
+            const blockSize = 80;  // Size of blue block
+            const speed = 20;      // Movement speed
+
+            // Start position (centered)
+            const [position, setPosition] = React.useState({
+                x: (boxWidth - blockSize) / 2,
+                y: (boxHeight - blockSize) / 2
+            });
+
+            React.useEffect(() => {
+                function handleKeyDown(event) {
+                    setPosition(prev => {
+                        let newX = prev.x;
+                        let newY = prev.y;
+
+                        // Movement controls
+                        if (event.key === 'w') newY -= speed; // Move up
+                        if (event.key === 's') newY += speed; // Move down
+                        if (event.key === 'a') newX -= speed; // Move left
+                        if (event.key === 'd') newX += speed; // Move right
+
+                        // **Wrap-around logic**
+                        if (newX < 0) newX = boxWidth - blockSize;  // Left to right
+                        if (newX > boxWidth - blockSize) newX = 0;  // Right to left
+                        if (newY < 0) newY = boxHeight - blockSize; // Top to bottom
+                        if (newY > boxHeight - blockSize) newY = 0;  // Bottom to top
+
+                        return { x: newX, y: newY };
+                    });
+                }
+
+                window.addEventListener('keydown', handleKeyDown);
+                return () => window.removeEventListener('keydown', handleKeyDown);
+            }, []);
+
+            return (
+                <div className="relative h-[500px] w-[650px] bg-[#6a8570] border-2 border-black rounded-lg overflow-hidden">
+                    {/* Blue Div that moves */}
+                    <div
+                        className="absolute bg-blue-500 rounded-lg shadow-lg"
+                        style={{
+                            width: `${blockSize}px`,
+                            height: `${blockSize}px`,
+                            transform: `translate(${position.x}px, ${position.y}px)`
+                        }}
+                    ></div>
+
+                    {/* Button that stays fixed */}
+                    <button className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-[#47594b] px-4 py-2 rounded hover:bg-gray-600">
+                        Learn More About Me
+                    </button>
+                </div>
+            );
+        }
+
+        function PortfolioPage() {
+            return (
+                <div className="min-h-screen w-full">
+                    <nav className="p-4 bg-black flex justify-between items-center shadow-md">
+                        <h1 className="text-xl font-bold">My Portfolio</h1>
+                        <ul className="flex space-x-6">
+                            <li><a href="#about" className="hover:text-gray-400">About</a></li>
+                            <li><a href="#projects" className="hover:text-gray-400">Projects</a></li>
+                            <li><a href="#contact" className="hover:text-gray-400">Contact</a></li>
+                        </ul>
+                    </nav>
+
+                    <div className="flex items-center justify-center">
+                        <GameBoyAnimation /> {/* Render the GameBoyAnimation component */}
+                    </div>
+
+                    <section id="projects" className="p-8">
+                        <h2 className="text-2xl font-bold text-center mb-6">My Latest Projects</h2>
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                            <div className="bg-red-700 h-32 rounded-lg"></div>
+                            <div className="bg-red-600 h-32 rounded-lg"></div>
+                            <div className="bg-red-700 h-32 rounded-lg"></div>
+                            <div className="bg-red-600 h-32 rounded-lg"></div>
+                        </div>
+                    </section>
+                </div>
+            );
+        }
+
+        ReactDOM.createRoot(document.getElementById("root")).render(<PortfolioPage />);
+    </script>
+</body>
+</html>
